@@ -1,6 +1,6 @@
 <template>
-    <form @submit.prevent="submitForm">
-        <select v-model="formData.virtual_machine_id">
+    <form @submit.prevent="submitForm" class="application-form">
+        <select v-model="formData.virtual_machine_id" class="application-form__select">
             <option v-for="vm in virtualMachines" :key="vm.id" :value="vm.id">
                 {{ vm.name }}
             </option>
@@ -77,7 +77,6 @@ const handleSubmit = async () => {
     isEditing.value = false;
 };
 
-
 const virtualMachines = ref([]);
 const fetchVirtualMachines = async () => {
     const response = await axios.get('http://localhost:3001/api/virtualmachines/'); // Путь к API для получения ВМ
@@ -89,18 +88,18 @@ fetchVirtualMachines();
 </script>
 
 <style scoped>
-form {
+.application-form {
     display: flex;
     flex-direction: column;
 }
 
-input,
-textarea,
-select {
+.application-form__select {
     margin: 5px 0;
-}
-
-button {
-    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
 }
 </style>
