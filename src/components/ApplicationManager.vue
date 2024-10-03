@@ -1,6 +1,6 @@
 <template>
     <div class="application-manager">
-        <div class="application-list">
+        <div class="application-manager__list">
             <h2>Список приложений</h2>
             <InputField v-model="searchTag" name="searchTag" label="" placeholder="Поиск по тегам" />
             <ul>
@@ -11,7 +11,7 @@
                 </li>
             </ul>
         </div>
-        <div class="application-form">
+        <div class="application-manager__form">
             <ApplicationForm :application="selectedApplication" @created="afterCreateApplication"
                 @updated="afterUpdateApplication" />
         </div>
@@ -92,16 +92,26 @@ export default {
 <style scoped>
 .application-manager {
     display: flex;
+    flex-direction: row;
+    padding: 20px;
+    gap: 20px;
 }
 
-.application-list {
-    width: 50%;
+.application-manager__list {
+    width: 100%;
+    border: 1px solid #ccc;
     padding: 10px;
-    border-right: 1px solid #ccc;
+    margin-bottom: 20px;
 }
 
-.application-form {
-    width: 50%;
-    padding: 10px;
+.application-manager__list-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.application-manager__form {
+    width: 100%;
 }
 </style>
