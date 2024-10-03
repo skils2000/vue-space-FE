@@ -22,8 +22,11 @@ import { ref, watch, defineEmits } from 'vue';
 import axios from 'axios';
 import InputField from './InputField.vue';
 import Button from './Button.vue';
+import {
+    updateApplication,
+    createApplication
+} from "../services/api";
 
-// const components: { InputField, Button }
 const props = defineProps({
     application: Object,
 })
@@ -41,7 +44,6 @@ const formData = ref({
 
 const isEditing = ref(false);
 
-// Обновляем форму при выборе приложения
 watch(() => props.application, (newApp) => {
     if (newApp) {
         formData.value = { ...newApp };
@@ -64,19 +66,18 @@ watch(() => props.application, (newApp) => {
 const handleSubmit = async () => {
     console.log("Submit");
     if (props.application) {
-        await axios.put(`http://localhost:3001/api/applications/${props.application.id}/`, formData.value);
+        await updateApplication(props.application.id, formData.value);
         emit('updated');
     } else {
-        await axios.post('http://localhost:3001/api/applications/', formData.value);
+        await createApplication(formData.value);
         emit('created');
     }
 
-    // Сбросить форму
     formData.value = { ...formData.value, name: '', url: '', description: '', login: '', password: '', tags: '', virtual_machine_id: null };
     isEditing.value = false;
 };
 
-// Получение виртуальных машин для выпадающего списка
+
 const virtualMachines = ref([]);
 const fetchVirtualMachines = async () => {
     const response = await axios.get('http://localhost:3001/api/virtualmachines/'); // Путь к API для получения ВМ
