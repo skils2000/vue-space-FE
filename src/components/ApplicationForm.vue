@@ -13,7 +13,7 @@
         <InputField v-model="formData.password" name="password" label="Password" />
         <InputField v-model="formData.tags" name="tags" label="Tags" />
 
-        <Button @click="handleSubmit">Submit</Button>
+        <Button @click="handleSubmit">{{ isEditing ? 'Обновить' : 'Создать' }}</Button>
     </form>
 </template>
 
@@ -27,7 +27,7 @@ import Button from './Button.vue';
 const props = defineProps({
     application: Object,
 })
-const emit = defineEmits(['created'])
+const emit = defineEmits(['created', 'updated'])
 
 const formData = ref({
     virtual_machine_id: null,
@@ -39,10 +39,13 @@ const formData = ref({
     tags: ''
 });
 
+const isEditing = ref(false);
+
 // Обновляем форму при выборе приложения
 watch(() => props.application, (newApp) => {
     if (newApp) {
         formData.value = { ...newApp };
+        isEditing.value = true;
     } else {
         formData.value = {
             virtual_machine_id: null,
@@ -53,21 +56,24 @@ watch(() => props.application, (newApp) => {
             password: '',
             tags: ''
         };
+        isEditing.value = false;
     }
 });
+
 
 const handleSubmit = async () => {
     console.log("Submit");
     if (props.application) {
         await axios.put(`http://localhost:3001/api/applications/${props.application.id}/`, formData.value);
+        emit('updated');
     } else {
         await axios.post('http://localhost:3001/api/applications/', formData.value);
+        emit('created');
     }
-    emit('created');
-
 
     // Сбросить форму
-    formData.value = { ...formData.value, name: '', url: '', description: '', login: '', password: '', tags: '' };
+    formData.value = { ...formData.value, name: '', url: '', description: '', login: '', password: '', tags: '', virtual_machine_id: null };
+    isEditing.value = false;
 };
 
 // Получение виртуальных машин для выпадающего списка

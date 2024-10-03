@@ -3,13 +3,16 @@
         <div class="application-list">
             <h2>Список приложений</h2>
             <ul>
-                <li v-for="app in applications" :key="app.id" @click="selectApplication(app)">
+                <li v-for="app in applications" :key="app.id">
                     {{ app.name }}
+                    <button @click="editApplication(app)">Редактировать</button>
+                    <button @click="deleteApplication(app.id)">Удалить</button>
                 </li>
             </ul>
         </div>
         <div class="application-form">
-            <ApplicationForm :application="selectedApplication" @created="fetchApplications" />
+            <ApplicationForm :application="selectedApplication" @created="fetchApplications"
+                @updated="fetchApplications" />
         </div>
     </div>
 </template>
@@ -18,7 +21,8 @@
 import { ref, onMounted } from "vue";
 import {
     getApplications,
-    createApplication,
+    updateApplication,
+    deleteApplication
 } from "../services/api";
 import ApplicationForm from "./ApplicationForm.vue";
 
@@ -26,22 +30,15 @@ export default {
     components: { ApplicationForm },
     setup() {
         const applications = ref([]);
-        const newApplication = ref({
-            name: "",
-            url: ""
-        });
+        const selectedApplication = ref(null);
         const searchTag = ref("");
 
         const fetchApplications = async () => {
-            console.log("Fetching applications");
-
             applications.value = await getApplications();
         };
 
-        const handleSubmit = async () => {
-            const createdApp = await createApplication(newApplication.value);
-            applications.value.push(createdApp);
-            newApplication.value = { name: "", url: "" }; // Сброс формы
+        const editApplication = (app) => {
+            selectedApplication.value = { ...app }; 
         };
 
         const searchApplications = async () => {
@@ -52,15 +49,20 @@ export default {
             }
         };
 
+        const deleteApplicationHandler = async (id) => {
+            await deleteApplication(id);
+            fetchApplications(); // Обновление списка после удаления
+        };
+
         onMounted(fetchApplications);
 
         return {
             applications,
-            newApplication,
-            handleSubmit,
+            selectedApplication,
             searchTag,
-            searchApplications,
-            fetchApplications
+            fetchApplications,
+            editApplication,
+            deleteApplication: deleteApplicationHandler,
         };
     },
 };
@@ -78,7 +80,7 @@ export default {
 }
 
 .application-form {
-    width: 70%;
+    width: 50%;
     padding: 10px;
 }
 </style>
