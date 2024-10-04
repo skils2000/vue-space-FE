@@ -13,7 +13,8 @@
         <InputField v-model="formData.password" name="password" label="Password" />
         <InputField v-model="formData.tags" name="tags" label="Tags" />
 
-        <Button @click="handleSubmit">{{ isEditing ? 'Обновить' : 'Создать' }}</Button>
+        <SimpleButton @handleClick="handleSubmit">{{ isEditing ? 'Обновить' :
+            'Создать' }}</SimpleButton>
     </form>
 </template>
 
@@ -21,7 +22,7 @@
 import { ref, watch, defineEmits } from 'vue';
 import axios from 'axios';
 import InputField from './InputField.vue';
-import Button from './Button.vue';
+import SimpleButton from './SimpleButton.vue';
 import {
     updateApplication,
     createApplication

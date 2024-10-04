@@ -27,6 +27,7 @@ import {
 } from "../services/api";
 import InputField from './InputField.vue';
 import Button from './Button.vue';
+import Button from './SimpleButton.vue';
 import ApplicationForm from "./ApplicationForm.vue";
 
 export default {
