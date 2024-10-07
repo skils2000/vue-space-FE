@@ -6,16 +6,18 @@
 
 <script>
 export default {
+    name: 'SimpleButton',
     props: {
         disabled: {
             type: Boolean,
             default: false
         }
     },
-    methods: {
-        handleClick() {
-            this.$emit('handleClick');
+    setup(props, {emit}) {
+        const handleClick = () => {
+            emit('handleClick');
         }
+        return { handleClick }
     }
 };
 </script>
