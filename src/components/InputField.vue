@@ -40,7 +40,7 @@ export default {
 
 <style scoped>
 .form-field {
-    margin-bottom: 15px;
+    padding: 8px 0;
 }
 
 .form-field__label {
