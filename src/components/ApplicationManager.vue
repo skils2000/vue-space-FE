@@ -12,42 +12,34 @@
             </ul>
         </div>
         <div class="application-manager__form">
-            <ApplicationForm :application="selectedApplication" @created="afterCreateApplication"
-                @updated="afterUpdateApplication" />
+            <ApplicationForm :application="selectedApplication" :onSubmit="handleFormSubmit" />
         </div>
     </div>
 </template>
 
 <script>
 import { ref, onMounted, computed } from "vue";
-import {
-    getApplications,
-    updateApplication,
-    deleteApplication
-} from "../services/api";
 import InputField from './InputField.vue';
-import Button from './Button.vue';
 import Button from './SimpleButton.vue';
 import ApplicationForm from "./ApplicationForm.vue";
+import { useApplications } from "@/composables/useApplications";
 
 export default {
     components: { ApplicationForm, InputField, Button },
     setup() {
-        const applications = ref([]);
+        const { apps, fetchApps, addApp, updateApp, deleteApp } = useApplications();
+
         const selectedApplication = ref(null);
         const searchTag = ref("");
 
-        const fetchApplications = async () => {
-            applications.value = await getApplications();
-        };
-
         const filteredApplications = computed(() => {
             if (searchTag.value) {
-                return applications.value.filter(app =>
+                return apps.value.filter(app =>
                     app.tags.includes(searchTag.value)
                 );
             }
-            return applications.value;
+
+            return apps.value;
         });
 
         const editApplication = (app) => {
@@ -55,36 +47,32 @@ export default {
         };
 
         const deleteApplicationHandler = async (id) => {
-            await deleteApplication(id);
-            fetchApplications();
+            await deleteApp(id);
         };
 
-        const afterCreateApplication = () => {
-            fetchApplications();
-        }
-
-        const afterUpdateApplication = () => {
-            fetchApplications();
-            cancelEdit()
-        }
+        const handleFormSubmit = async (formData) => {
+            if (selectedApplication.value) {
+                await updateApp(selectedApplication.value.id, formData);
+                cancelEdit()
+            } else {
+                await addApp(formData);
+            }
+        };
 
         const cancelEdit = () => {
             selectedApplication.value = null;
         };
 
-        onMounted(fetchApplications);
+        onMounted(fetchApps);
 
         return {
-            applications,
             selectedApplication,
             searchTag,
-            fetchApplications,
-            editApplication,
-            deleteApplication: deleteApplicationHandler,
             filteredApplications,
-            cancelEdit,
-            afterCreateApplication,
-            afterUpdateApplication,
+            fetchApps,
+            handleFormSubmit,
+            deleteApplication: deleteApplicationHandler,
+            editApplication,
         };
     },
 };

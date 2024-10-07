@@ -23,13 +23,10 @@ import { ref, watch, defineEmits } from 'vue';
 import axios from 'axios';
 import InputField from './InputField.vue';
 import SimpleButton from './SimpleButton.vue';
-import {
-    updateApplication,
-    createApplication
-} from "../services/api";
 
 const props = defineProps({
     application: Object,
+    onSubmit: Function,
 })
 const emit = defineEmits(['created', 'updated'])
 
@@ -50,38 +47,40 @@ watch(() => props.application, (newApp) => {
         formData.value = { ...newApp };
         isEditing.value = true;
     } else {
-        formData.value = {
-            virtual_machine_id: null,
-            name: '',
-            url: '',
-            description: '',
-            login: '',
-            password: '',
-            tags: ''
-        };
-        isEditing.value = false;
+        resetForm();
     }
 });
 
+const resetForm = () => {
+    formData.value = {
+        virtual_machine_id: null,
+        name: '',
+        url: '',
+        description: '',
+        login: '',
+        password: '',
+        tags: ''
+    };
+    isEditing.value = false;
+};
+
 
 const handleSubmit = async () => {
-    console.log("Submit");
-    if (props.application) {
-        await updateApplication(props.application.id, formData.value);
-        emit('updated');
-    } else {
-        await createApplication(formData.value);
-        emit('created');
-    }
 
-    formData.value = { ...formData.value, name: '', url: '', description: '', login: '', password: '', tags: '', virtual_machine_id: null };
-    isEditing.value = false;
+    props.onSubmit(formData.value);
+    resetForm();
+
 };
 
 const virtualMachines = ref([]);
 const fetchVirtualMachines = async () => {
-    const response = await axios.get('http://localhost:3001/api/virtualmachines/'); // Путь к API для получения ВМ
-    virtualMachines.value = response.data;
+    try {
+        const response = await axios.get('http://localhost:3001/api/virtualmachines/'); // Путь к API для получения ВМ
+        virtualMachines.value = response.data;
+    } catch (error) {
+        virtualMachines.value = []
+        console.error(error);
+    }
 };
 
 fetchVirtualMachines();
