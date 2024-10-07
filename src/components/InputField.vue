@@ -1,13 +1,15 @@
 <template>
     <div class="form-field">
         <label class="form-field__label" :for="name">{{ label }}</label>
-        <input class="form-field__input" :id="name" :value="modelValue" @input="updateValue" :type="type"
+        <input class="form-field__input" :id="name" v-model="inputValue" @input="updateValue" :type="type"
             :placeholder="placeholder" />
     </div>
 </template>
 
 <script>
+import { ref, watch } from 'vue';
 export default {
+    name: 'InputField',
     props: {
         modelValue: {
             type: String,
@@ -30,11 +32,25 @@ export default {
             default: ''
         }
     },
-    methods: {
-        updateValue(event) {
-            this.$emit('update:modelValue', event.target.value);
-        }
-    }
+    setup (props, {emit}) {
+        const inputValue = ref(props.modelValue);
+
+        watch(() => props.modelValue, (newValue) => {
+            inputValue.value = newValue;
+        });
+
+        const updateValue = (event) => {
+            const value = event.target.value;
+            inputValue.value = value;
+
+            emit('update:modelValue', value);
+        };
+
+        return {
+            inputValue,
+            updateValue
+        };
+    },
 };
 </script>
 
