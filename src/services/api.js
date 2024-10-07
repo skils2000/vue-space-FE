@@ -26,3 +26,7 @@ export const deleteApplication = async (id) => {
   await api.delete(`applications/${id}/`)
 }
 
+export const getVirtualMachines = async () => {
+  const response = await api.get('virtualmachines/')
+  return response.data = response.data
+}

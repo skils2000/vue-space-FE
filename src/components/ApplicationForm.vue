@@ -23,6 +23,7 @@ import { ref, watch, defineEmits } from 'vue';
 import axios from 'axios';
 import InputField from './InputField.vue';
 import SimpleButton from './SimpleButton.vue';
+import { getVirtualMachines } from '@/services/api';
 
 const props = defineProps({
     application: Object,
@@ -75,8 +76,8 @@ const handleSubmit = async () => {
 const virtualMachines = ref([]);
 const fetchVirtualMachines = async () => {
     try {
-        const response = await axios.get('http://localhost:3001/api/virtualmachines/'); // Путь к API для получения ВМ
-        virtualMachines.value = response.data;
+        const response = await getVirtualMachines()
+        virtualMachines.value = response;
     } catch (error) {
         virtualMachines.value = []
         console.error(error);
